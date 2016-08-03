@@ -10,12 +10,15 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
 
+// import config file
+import config from "./config";
+
 // Firebase Configuration
 let FireConfig = {
-  apiKey: "AIzaSyCaTbuPESNwOw9s-zmvJ4gb7BwRFvhKzf4",
-  authDomain: "gitblog-d68cd.firebaseapp.com",
-  databaseURL: "https://gitblog-d68cd.firebaseio.com",
-  storageBucket: "gitblog-d68cd.appspot.com",
+  apiKey: config.Key,
+  authDomain: config.Domain,
+  databaseURL: config.DB,
+  storageBucket: config.Storage,
 };
 
 firebase.initializeApp(FireConfig);
@@ -38,16 +41,12 @@ class UserGist extends React.Component {
 
   componentDidMount() {
     let x = this;
-    let commentsRef = firebase.database().ref('posts/').limitToFirst(10);
+    let commentsRef = firebase.database().ref('posts/').orderByChild('id').startAt().limitToLast(10);
     commentsRef.on('value', function(data) {
       x.setState({
-        post : data.val()
+        post : data.val().reverse()
       });
     });
-  }
-
-  componentWillUnmount() {
-    this.serverRequest.abort();
   }
 
   render() {
